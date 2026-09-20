@@ -47,25 +47,53 @@ Mỗi lần container khởi động trên Railway, nó cũng sẽ in to rõ rà
 
 ---
 
-## 🚀 Hướng Dẫn Triển Khai 1-Click Lên Railway (Dành Cho Bạn Bè)
+## 🚀 Hướng Dẫn Thêm Trực Tiếp Vào Project Có Sẵn Trên Railway
 
-### Bước 1: Nhấn Nút Triển Khai
-Bấm vào nút bên dưới:
+Nếu bạn bè đã có một Project trên Railway và muốn thêm service proxy này vào chung:
 
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new/template?template=https%3A%2F%2Fgithub.com%2FManiakov132414%2Fcf-bpsub-railway)
+### Cách 1: Thao tác trên giao diện Web Railway (Đơn giản nhất - 1 phút)
 
-### Bước 2: Cấu Hình Biến Môi Trường (Hoặc Để Mặc Định)
-Railway sẽ hỏi các biến sau:
-- `VLESS_HOST`: Tên miền Cloudflare Worker của bạn (Mặc định: `proxy.maniakov.bond`).
-- `VLESS_UUID`: Mã UUID VLESS của bạn (Mặc định: `2eb5a0d9-3f07-4537-93db-e25d2ecbc473`).
-- `ECH_DOMAIN`: Tên miền ECH dùng để mã hóa (Mặc định: `cloudflare-ech.com`).
-- `ECH_DOH`: DoH server dùng để phân giải ECH (Mặc định: `https://dns.alidns.com/dns-query`).
+1. **Mở Project có sẵn** trên trang [railway.com](https://railway.com).
+2. Nhấn nút **`+ Create`** (ở góc trên bên phải màn hình canvas) &rarr; Chọn **`GitHub Repo`**.
+3. Dán đường dẫn repository này vào:
+   ```text
+   https://github.com/Maniakov132414/cf-bpsub-railway
+   ```
+   *(Hoặc nếu đã Fork repo về tài khoản của họ thì chỉ cần chọn `cf-bpsub-railway` từ danh sách).*
+4. Đợi Railway kéo mã nguồn về và khởi tạo service.
+5. **Cấu hình mở cổng Proxy công khai**:
+   - Bấm vào service vừa tạo &rarr; Chọn thẻ **Settings**.
+   - Cuộn xuống mục **Networking**:
+     - Bấm **`Add TCP Proxy`** &rarr; Điền số cổng: **`8888`** (đây là cổng chạy proxy SOCKS5/HTTP).
+     - *(Tùy chọn)* Bấm **`Generate Domain`** &rarr; Đổi target port thành **`3000`** để xem giao diện web.
+6. **Lấy link proxy**:
+   - Chuyển sang thẻ **Deploy Logs** của service.
+   - Nhìn vào màn hình console, bạn sẽ thấy Railway in sẵn:
+     ```text
+     👉 SOCKS5 Proxy : socks5://xxxx.proxy.rlwy.net:yyyyy
+     👉 HTTP Proxy   : http://xxxx.proxy.rlwy.net:yyyyy
+     ```
+   - Copy 1 trong 2 dòng đó dán vào `proxies.txt` là dùng được ngay!
 
-### Bước 3: Hoàn Tất
-Sau khoảng 30 giây, Railway sẽ cung cấp một tên miền dạng `https://xxx.up.railway.app`:
-1. Mở trang web đó lên.
-2. Bấm **Sao Chép Link** tại mục **v2rayN** hoặc **Clash**.
-3. Dán vào ứng dụng proxy trên điện thoại hoặc máy tính và nhấn **Update Subscription**!
+---
+
+### Cách 2: Dùng lệnh Railway CLI (Dành cho ai thích gõ lệnh)
+
+Mở terminal tại máy đã đăng nhập Railway CLI:
+
+```bash
+# 1. Liên kết vào project có sẵn của bạn
+railway link
+
+# 2. Thêm service trực tiếp từ GitHub repo
+railway add --repo Maniakov132414/cf-bpsub-railway --branch main --service cf-bpsub
+
+# 3. Tạo cổng TCP Proxy công khai trên port 8888
+railway tcp-proxy create --port 8888 --service cf-bpsub
+
+# 4. Xem link proxy trong console logs
+railway logs --service cf-bpsub
+```
 
 ---
 
