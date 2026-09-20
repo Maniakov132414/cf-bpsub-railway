@@ -8,7 +8,8 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const app = express()
-const PORT = process.env.PORT || 8080
+const PROXY_PORT = 8888
+const WEB_PORT = (process.env.PORT && process.env.PORT !== '8888') ? Number(process.env.PORT) : 3000
 const TCP_DOMAIN = process.env.RAILWAY_TCP_PROXY_DOMAIN || 'iriguchi.proxy.rlwy.net'
 const TCP_PORT = process.env.RAILWAY_TCP_PROXY_PORT || '22658'
 const WEB_DOMAIN = process.env.RAILWAY_PUBLIC_DOMAIN || 'cf-bpsub-production.up.railway.app'
@@ -514,7 +515,7 @@ app.get('/health', (req, res) => {
 // Pre-fetch clean IPs on start
 fetchCleanIPs().then(nodes => {
   startXray(nodes)
-  app.listen(PORT, '0.0.0.0', () => {
+  app.listen(WEB_PORT, '0.0.0.0', () => {
     console.log(`
 ================================================================================
 🚀 CF-BPSUB PROXY SERVER ĐÃ SẴN SÀNG!
