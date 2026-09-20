@@ -1,12 +1,19 @@
 import express from 'express'
 import path from 'path'
+import fs from 'fs'
+import { spawn } from 'child_process'
 import { fileURLToPath } from 'url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const app = express()
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 8080
+const TCP_DOMAIN = process.env.RAILWAY_TCP_PROXY_DOMAIN || 'iriguchi.proxy.rlwy.net'
+const TCP_PORT = process.env.RAILWAY_TCP_PROXY_PORT || '22658'
+const WEB_DOMAIN = process.env.RAILWAY_PUBLIC_DOMAIN || 'cf-bpsub-production.up.railway.app'
+
+let xrayProcess = null
 
 // Default configuration with environment overrides
 const CONFIG = {
@@ -321,6 +328,97 @@ function buildSingboxConfig(nodes, options = {}) {
   }, null, 2)
 }
 
+function startXray(nodes) {
+  const xrayPath = fs.existsSync('./xray') ? './xray' : (fs.existsSync('/app/xray') ? '/app/xray' : null)
+  if (!xrayPath) {
+    console.log('[Xray] Binary not found in environment, running in Web & Subscription mode only')
+    return
+  }
+
+  const outbounds = nodes.map((n, i) => ({
+    tag: `node-${i}`,
+    protocol: 'vless',
+    settings: {
+      vnext: [
+        {
+          address: n.address,
+          port: n.port,
+          users: [
+            {
+              id: CONFIG.uuid,
+              encryption: 'none'
+            }
+          ]
+        }
+      ]
+    },
+    streamSettings: {
+      network: 'ws',
+      security: 'tls',
+      tlsSettings: {
+        serverName: CONFIG.host
+      },
+      wsSettings: {
+        path: CONFIG.path,
+        headers: {
+          Host: CONFIG.host
+        }
+      }
+    }
+  }))
+
+  const xrayConfig = {
+    log: { loglevel: 'warning' },
+    inbounds: [
+      {
+        port: 8888,
+        listen: '0.0.0.0',
+        protocol: 'mixed',
+        settings: {
+          auth: 'noauth',
+          udp: true
+        }
+      }
+    ],
+    outbounds: outbounds,
+    routing: {
+      balancers: [
+        {
+          tag: 'roundrobin-balancer',
+          selector: ['node-'],
+          strategy: { type: 'random' }
+        }
+      ],
+      rules: [
+        {
+          type: 'field',
+          network: 'tcp,udp',
+          balancerTag: 'roundrobin-balancer'
+        }
+      ]
+    }
+  }
+
+  fs.writeFileSync('./xray_config.json', JSON.stringify(xrayConfig, null, 2))
+  console.log(`[Xray] Configured port 8888 with ${outbounds.length} BestCF clean IP outbounds`)
+
+  if (xrayProcess) {
+    xrayProcess.kill()
+  }
+
+  xrayProcess = spawn(xrayPath, ['run', '-c', './xray_config.json'], {
+    stdio: 'inherit'
+  })
+
+  xrayProcess.on('error', err => {
+    console.error('[Xray] Error starting process:', err.message)
+  })
+
+  xrayProcess.on('exit', code => {
+    console.log(`[Xray] Process exited with code ${code}`)
+  })
+}
+
 // Serve static frontend
 app.use(express.static(path.join(__dirname, 'public')))
 
@@ -334,6 +432,12 @@ app.get('/api/info', async (req, res) => {
       host: req.query.host || CONFIG.host,
       echDomain: req.query.echDomain || CONFIG.echDomain,
       echDoh: req.query.echDoh || CONFIG.echDoh
+    },
+    proxy: {
+      domain: TCP_DOMAIN,
+      port: TCP_PORT,
+      socks5: `socks5://${TCP_DOMAIN}:${TCP_PORT}`,
+      http: `http://${TCP_DOMAIN}:${TCP_PORT}`
     },
     stats: {
       totalNodes: nodes.length,
@@ -349,6 +453,7 @@ app.get('/api/info', async (req, res) => {
 // API: Refresh nodes cache
 app.post('/api/refresh', async (req, res) => {
   const nodes = await fetchCleanIPs(true)
+  startXray(nodes)
   res.json({ success: true, count: nodes.length })
 })
 
@@ -407,8 +512,20 @@ app.get('/health', (req, res) => {
 })
 
 // Pre-fetch clean IPs on start
-fetchCleanIPs().then(() => {
+fetchCleanIPs().then(nodes => {
+  startXray(nodes)
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`[CF-BPSUB-Railway] Server listening on http://0.0.0.0:${PORT}`)
+    console.log(`
+================================================================================
+🚀 CF-BPSUB PROXY SERVER ĐÃ SẴN SÀNG!
+
+👉 SOCKS5 Proxy : socks5://${TCP_DOMAIN}:${TCP_PORT}
+👉 HTTP Proxy   : http://${TCP_DOMAIN}:${TCP_PORT}
+
+📋 Copy 1 trong 2 dòng trên dán vào 'proxies.txt' của toapis_auto_tool hoặc bot để chạy!
+⚡ Định tuyến: Cân bằng tải ngẫu nhiên qua ${nodes.length} Clean IP BestCF (JP, SG, US)
+🌐 Web Dashboard: https://${WEB_DOMAIN}
+================================================================================
+`)
   })
 })

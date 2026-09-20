@@ -16,6 +16,9 @@ const linkSingbox = document.getElementById('linkSingbox')
 const linkIps = document.getElementById('linkIps')
 const btnOpenIps = document.getElementById('btnOpenIps')
 
+const proxySocks5 = document.getElementById('proxySocks5')
+const proxyHttp = document.getElementById('proxyHttp')
+
 const totalNodes = document.getElementById('totalNodes')
 const jpNodes = document.getElementById('jpNodes')
 const sgNodes = document.getElementById('sgNodes')
@@ -40,6 +43,11 @@ async function loadServerInfo() {
       jpNodes.textContent = data.stats.jp
       sgNodes.textContent = data.stats.sg
       usNodes.textContent = data.stats.us
+
+      if (data.proxy) {
+        if (proxySocks5) proxySocks5.value = data.proxy.socks5
+        if (proxyHttp) proxyHttp.value = data.proxy.http
+      }
     }
   } catch (e) {
     console.error('Failed to load info:', e)

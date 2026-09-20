@@ -8,7 +8,8 @@ Trình tạo đăng ký VLESS tốc độ cao, tự động lọc và kết hợ
 
 ## ✨ Tính Năng Nổi Bật
 
-- ⚡ **IP Ưu Tiên Siêu Tốc (BestCF)**: Tự động quét và lấy danh sách Clean IP (Anycast IP) ping thấp nhất từ dải Nhật Bản (JP 🇯🇵), Singapore (SG 🇸🇬), và Hoa Kỳ (US 🇺🇸).
+- 🔥 **Public Proxy Trực Tiếp (SOCKS5 / HTTP)**: Chạy một cổng proxy trực tiếp trên Railway (port 8888). Client/Bot chỉ cần điền địa chỉ `socks5://...` hoặc `http://...` vào file `proxies.txt` là dùng ngay, không cần cài đặt v2rayN!
+- ⚡ **IP Ưu Tiên Siêu Tốc (BestCF)**: Phía sau proxy tự động cân bằng tải xoay vòng qua 40 Clean Anycast IP ping thấp nhất từ dải Nhật Bản (JP 🇯🇵), Singapore (SG 🇸🇬), và Hoa Kỳ (US 🇺🇸).
 - 🛡️ **Khắc Phục Lỗi Ping -1 Bằng ECH**: Tự động chèn tham số mã hóa SNI `ech=cloudflare-ech.com+https://dns.alidns.com/dns-query` vào từng node, giấu tên miền Worker khỏi tầm ngắm của tường lửa.
 - 🔧 **Tự Động Sửa Lỗi Ký Tự `|`**: Tự động chuyển đổi các ký tự `|` trong ghi chú node thành `-` để tương thích 100% với trình phân tích cú pháp của BPSUB.
 - 📱 **Đa Định Dạng Đăng Ký**:
@@ -16,8 +17,33 @@ Trình tạo đăng ký VLESS tốc độ cao, tự động lọc và kết hợ
   - `GET /clash` &rarr; Cấu hình YAML cho **Clash Verge, Mihomo Party, FlClash** (Tích hợp sẵn bộ lọc Auto Select, Fallback và Load Balance).
   - `GET /singbox` &rarr; Cấu hình JSON cho **Sing-box**.
   - `GET /ips` &rarr; Xuất danh sách IP ưu tiên sạch đã qua xử lý ký tự `|`.
-- 🌐 **Web Dashboard Trực Quan**: Giao diện web quản lý hiện đại, cho phép xem trực tiếp số lượng IP và copy link 1 click.
+- 🌐 **Web Dashboard Trực Quan**: Giao diện web quản lý hiện đại, hiển thị sẵn link proxy public và link subscription để copy 1 click.
 - 🚀 **1-Click Deploy Lên Railway**: Người dùng hoặc bạn bè chỉ cần nhấn 1 nút là hệ thống tự khởi tạo trên Railway mà không cần cài đặt gì trên máy.
+
+---
+
+## 🎯 Dùng Ngay Cho Tool / Bot (`toapis_auto_tool`)
+
+Nếu bạn đang dùng tool chạy hàng loạt (như Python `requests` hoặc `toapis_auto_tool`), copy 1 trong 2 định dạng sau dán vào `proxies.txt`:
+
+```text
+socks5://iriguchi.proxy.rlwy.net:22658
+http://iriguchi.proxy.rlwy.net:22658
+```
+
+Mỗi lần container khởi động trên Railway, nó cũng sẽ in to rõ ràng trong **Console Logs**:
+```text
+================================================================================
+🚀 CF-BPSUB PROXY SERVER ĐÃ SẴN SÀNG!
+
+👉 SOCKS5 Proxy : socks5://iriguchi.proxy.rlwy.net:22658
+👉 HTTP Proxy   : http://iriguchi.proxy.rlwy.net:22658
+
+📋 Copy 1 trong 2 dòng trên dán vào 'proxies.txt' của toapis_auto_tool hoặc bot để chạy!
+⚡ Định tuyến: Cân bằng tải ngẫu nhiên qua 40 Clean IP BestCF (JP, SG, US)
+🌐 Web Dashboard: https://cf-bpsub-production.up.railway.app
+================================================================================
+```
 
 ---
 

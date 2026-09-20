@@ -40,6 +40,27 @@
       </div>
     </div>
 
+    <!-- Direct Public Proxy for Tools & Bots -->
+    <div class="card proxy-banner-card">
+      <div class="card-header">
+        <h2>🔥 Public Proxy Trực Tiếp (Cho Tool Auto / Bot / toapis_auto_tool)</h2>
+        <span class="header-badge" style="margin-bottom:0">Đang Hoạt Động</span>
+      </div>
+      <p class="proxy-desc">Proxy này chạy trực tiếp trên Railway, tự động cân bằng tải xoay vòng qua 40 Clean IP của BestCF (Nhật Bản, Singapore, Mỹ) và mã hóa ECH. Copy 1 trong 2 dòng dưới đây dán thẳng vào <code>proxies.txt</code> của tool để chạy ngay!</p>
+      <div class="proxy-inputs-grid">
+        <div class="proxy-row">
+          <span class="proxy-tag">SOCKS5</span>
+          <input type="text" id="proxySocks5" class="sub-input" readonly value="socks5://iriguchi.proxy.rlwy.net:22658">
+          <button class="btn btn-primary btn-sm" onclick="copyLink('proxySocks5', this)">Sao Chép</button>
+        </div>
+        <div class="proxy-row">
+          <span class="proxy-tag">HTTP</span>
+          <input type="text" id="proxyHttp" class="sub-input" readonly value="http://iriguchi.proxy.rlwy.net:22658">
+          <button class="btn btn-primary btn-sm" onclick="copyLink('proxyHttp', this)">Sao Chép</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Configuration Settings -->
     <div class="card config-card">
       <div class="card-header">
