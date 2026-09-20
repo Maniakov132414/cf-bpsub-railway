@@ -1,0 +1,7 @@
+name = "vless-worker"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+routes = [
+  { pattern = "proxy.maniakov.bond", custom_domain = true }
+]

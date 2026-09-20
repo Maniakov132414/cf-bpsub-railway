@@ -1,0 +1,28 @@
+{
+  "name": "cf-bpsub-railway",
+  "version": "1.0.0",
+  "description": "Cloudflare VLESS Subscription Hub with BestCF Clean IPs and ECH SNI Encryption",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "vless",
+    "cloudflare",
+    "bpsub",
+    "bestcf",
+    "ech",
+    "clash",
+    "singbox",
+    "railway"
+  ],
+  "author": "Maniakov",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

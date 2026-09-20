@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloudflare VLESS Hub | BPSUB + BestCF + ECH</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="header-badge">
+        <span class="pulse-dot"></span>
+        <span>Hệ Thống Tự Động 24/7</span>
+      </div>
+      <h1>CF BPSUB + BestCF + ECH</h1>
+      <p class="subtitle">Trình tạo đăng ký VLESS tốc độ cao với dải IP ưu tiên sạch nhất từ BestCF và mã hóa chống chặn SNI bằng ECH.</p>
+    </header>
+
+    <!-- Stats Bar -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">Tổng IP Ưu Tiên</span>
+        <span class="stat-val" id="totalNodes">-</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">🇯🇵 Nhật Bản (JP)</span>
+        <span class="stat-val" id="jpNodes">-</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">🇸🇬 Singapore (SG)</span>
+        <span class="stat-val" id="sgNodes">-</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">🇺🇸 Hoa Kỳ (US)</span>
+        <span class="stat-val" id="usNodes">-</span>
+      </div>
+    </div>
+
+    <!-- Configuration Settings -->
+    <div class="card config-card">
+      <div class="card-header">
+        <h2>⚙️ Tùy Chỉnh Thông Số (Tùy Chọn)</h2>
+        <button id="resetBtn" class="btn btn-sm btn-ghost">Khôi Phục Mặc Định</button>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="inputHost">Domain Worker (HOST / SNI):</label>
+          <input type="text" id="inputHost" class="input" placeholder="proxy.maniakov.bond">
+        </div>
+        <div class="form-group">
+          <label for="inputUuid">UUID:</label>
+          <input type="text" id="inputUuid" class="input" placeholder="2eb5a0d9-3f07-4537-93db-e25d2ecbc473">
+        </div>
+        <div class="form-group">
+          <label for="inputEchDomain">Domain ECH (Mã hóa SNI):</label>
+          <input type="text" id="inputEchDomain" class="input" value="cloudflare-ech.com">
+        </div>
+        <div class="form-group">
+          <label for="inputEchDoh">DoH Server ECH:</label>
+          <input type="text" id="inputEchDoh" class="input" value="https://dns.alidns.com/dns-query">
+        </div>
+      </div>
+    </div>
+
+    <!-- Subscription Links -->
+    <div class="subs-grid">
+      <div class="sub-card">
+        <div class="sub-header">
+          <span class="sub-icon">📱</span>
+          <div>
+            <h3>v2rayN / v2rayNG / Shadowrocket</h3>
+            <p>Định dạng Base64 chuẩn cho các client VLESS thông dụng</p>
+          </div>
+        </div>
+        <div class="sub-action">
+          <input type="text" id="linkSub" class="sub-input" readonly>
+          <button class="btn btn-primary" onclick="copyLink('linkSub', this)">Sao Chép Link</button>
+        </div>
+      </div>
+
+      <div class="sub-card">
+        <div class="sub-header">
+          <span class="sub-icon">⚡</span>
+          <div>
+            <h3>Clash Verge / Mihomo / FlClash</h3>
+            <p>File cấu hình YAML tự động phân nhóm Auto-Select & Fallback</p>
+          </div>
+        </div>
+        <div class="sub-action">
+          <input type="text" id="linkClash" class="sub-input" readonly>
+          <button class="btn btn-primary" onclick="copyLink('linkClash', this)">Sao Chép Link</button>
+        </div>
+      </div>
+
+      <div class="sub-card">
+        <div class="sub-header">
+          <span class="sub-icon">📦</span>
+          <div>
+            <h3>Sing-box</h3>
+            <p>File JSON cấu hình chuẩn cho client Sing-box và SFI</p>
+          </div>
+        </div>
+        <div class="sub-action">
+          <input type="text" id="linkSingbox" class="sub-input" readonly>
+          <button class="btn btn-primary" onclick="copyLink('linkSingbox', this)">Sao Chép Link</button>
+        </div>
+      </div>
+
+      <div class="sub-card">
+        <div class="sub-header">
+          <span class="sub-icon">🌐</span>
+          <div>
+            <h3>Danh Sách IP Ưu Tiên (Đã sửa ký tự |)</h3>
+            <p>Dùng để dán trực tiếp vào bảng điều khiển BPSUB gốc</p>
+          </div>
+        </div>
+        <div class="sub-action">
+          <input type="text" id="linkIps" class="sub-input" readonly>
+          <a id="btnOpenIps" href="/ips" target="_blank" class="btn btn-secondary">Xem Danh Sách</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Guide Section -->
+    <div class="card guide-card">
+      <h2>📖 Hướng Dẫn Sử Dụng Nhanh</h2>
+      <div class="guide-steps">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div>
+            <h4>Cho v2rayN trên máy tính</h4>
+            <p>Mở <code>v2rayN</code> &rarr; Chọn menu <code>Subscription group</code> &rarr; <code>Subscription group setting</code> &rarr; Bấm <code>Add</code> &rarr; Dán link vào ô <code>url</code> &rarr; Bấm <code>Confirm</code> &rarr; Bấm <code>Update subscription</code>.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div>
+            <h4>Cho Clash Verge / Mihomo Party</h4>
+            <p>Mở <code>Clash Verge</code> &rarr; Chọn <code>Profiles</code> &rarr; Dán link Clash vào ô URL &rarr; Bấm <code>Import</code> &rarr; Bấm chuột phải vào profile chọn <code>Select</code>.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div>
+            <h4>Tự động làm mới IP sạch</h4>
+            <p>Server tự động quét và cập nhật danh sách IP ưu tiên sạch từ BestCF mỗi 15 phút. Bạn chỉ cần cập nhật subscription trên client là có IP mới nhất.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deploy on Railway button -->
+    <div class="deploy-banner">
+      <h3>🚀 Muốn tự host riêng cho bạn bè?</h3>
+      <p>Chỉ cần 1 cú click chuột để triển khai toàn bộ hệ thống lên Railway hoàn toàn tự động!</p>
+      <div class="deploy-btn-wrapper">
+        <a href="https://railway.com/new/template?template=https%3A%2F%2Fgithub.com%2FManiakov132414%2Fcf-bpsub-railway" target="_blank" rel="noopener">
+          <img src="https://railway.com/button.svg" alt="Deploy on Railway" class="railway-btn-img">
+        </a>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>© 2026 CF-BPSUB-Railway | Powered by BestCF & Cloudflare Workers</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
