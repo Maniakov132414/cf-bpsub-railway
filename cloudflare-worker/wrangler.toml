@@ -1,6 +1,7 @@
-name = "vless-worker"
+name = "cf-proxy-tunnel"
 main = "worker.js"
 compatibility_date = "2024-01-01"
+workers_dev = true
 
 routes = [
   { pattern = "proxy.maniakov.bond", custom_domain = true }

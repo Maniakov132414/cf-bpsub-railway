@@ -17,8 +17,11 @@ RUN npm install --production
 
 COPY . .
 
-ENV PORT=8080
-EXPOSE 8080
+ENV PORT=3000
+ENV VLESS_HOST=proxy.maniakov.bond
+ENV VLESS_UUID=2eb5a0d9-3f07-4537-93db-e25d2ecbc473
+ENV VLESS_PATH=/
+EXPOSE 3000
 EXPOSE 8888
 
 CMD ["node", "server.js"]
