@@ -1,8 +1,6 @@
 # 🚀 Cloudflare VLESS Hub (BPSUB + BestCF + ECH)
 
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new/template?template=https%3A%2F%2Fgithub.com%2FManiakov132414%2Fcf-bpsub-railway&envs=PORT%2CVLESS_HOST%2CVLESS_UUID&PORT.default=3000&VLESS_HOST.default=proxy.maniakov.bond&VLESS_UUID.default=2eb5a0d9-3f07-4537-93db-e25d2ecbc473)
-
-Trình tạo đăng ký VLESS tốc độ cao, tự động lọc và kết hợp dải IP ưu tiên sạch nhất từ **BestCF (优选站)** và kích hoạt mã hóa **ECH (Encrypted Client Hello)** để chống chặn SNI và chống bóp băng thông.
+Trình tạo đăng ký VLESS tốc độ cao, tự động lọc và kết hợp dải IP ưu tiên sạch nhất từ **BestCF ** và kích hoạt mã hóa **ECH (Encrypted Client Hello)** để chống chặn SNI và chống bóp băng thông.
 
 ---
 
